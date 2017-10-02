@@ -9,7 +9,7 @@ import scala.io.Source
 object Main extends App {
     val dummyText: String = "Zaphod Beeblebrox"
 
-    val textToDecode: String = Source.fromFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "EncodeThis_2847448.txt").mkString
+    val textToDecode: String = dummyText //Source.fromFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "EncodeThis_2847448.txt").mkString
     if (getCharacterFrequency(textToDecode).size < 2) {
       println("Go huff yourself, shorty!")
       System.exit(0)
@@ -20,8 +20,16 @@ object Main extends App {
 //    println(getTree(getSortedNodes(getCharacterFrequency(textToDecode))))
 //    println(getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(textToDecode)))))
 //    println(encodeDataWithMap(textToDecode, getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(textToDecode))))))
-    println(saveDataToFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.bin", encodeDataWithMap(textToDecode, getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(textToDecode)))))))
-//    saveNodesToFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.tree.bin", getCharacterFrequency(textToDecode))
+  //  println(saveDataToFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.bin", encodeDataWithMap(textToDecode, getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(textToDecode)))))))
+  var a = getSortedNodes(getCharacterFrequency(textToDecode))
+  println(a)
+  saveSortedNodesToFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.tree.bin", a)
+  val s = loadSortedNodesFromFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.tree.bin")
+  println(s)
+  getEncodingMapFromTree(getTree(a)).foreach(println)
+  println("K!")
+  getDecodingMapFromTree(getTree(s)).foreach(println)
+
 
   //  var b = BitSet(0, 2, 4, 6)
 //  var bools = ListBuffer[Boolean]() += b.ga

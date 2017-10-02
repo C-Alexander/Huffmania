@@ -1,4 +1,5 @@
-import java.io.{BufferedOutputStream, FileOutputStream, ObjectOutputStream}
+import java.io._
+import java.nio.ByteBuffer
 import java.util
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -62,12 +63,10 @@ object Huffman {
 def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Boolean]] = {
   time.measureTime {
     val map: mutable.HashMap[Char,  ArrayBuffer[Boolean]] = mutable.HashMap[Char, ArrayBuffer[Boolean]]()
-
     def addBitcodes(tree: Node,
                     location:  ArrayBuffer[Boolean] =  ArrayBuffer[Boolean]()): Unit = {
       tree match {
         case (leaf: Leaf) =>
-          println(s"adding leaf: ${leaf.char} for location: $location")
           map.put(leaf.char, location)
         case (branch: Branch) =>
           addBitcodes(branch.left, location.clone() += false)
@@ -81,31 +80,39 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Bool
   }
 }
 
+  //4-7
+  def getDecodingMapFromTree(tree: Branch): mutable.HashMap[ArrayBuffer[Boolean], Char] = {
+    time.measureTime {
+      val map: mutable.HashMap[ArrayBuffer[Boolean], Char] = mutable.HashMap[ArrayBuffer[Boolean], Char]()
+      def addBitcodes(tree: Node,
+                      location:  ArrayBuffer[Boolean] =  ArrayBuffer[Boolean]()): Unit = {
+        tree match {
+          case (leaf: Leaf) =>
+            map.put(location, leaf.char)
+          case (branch: Branch) =>
+            addBitcodes(branch.left, location.clone() += false)
+            addBitcodes(branch.right, location.clone() += true)
+        }
+      }
+
+      addBitcodes(tree)
+      println(map.size)
+      map
+    }
+  }
+
   //5
   def encodeDataWithMap(data: String, map: mutable.HashMap[Char, ArrayBuffer[Boolean]]): Array[Byte] = {
     time.measureTime {
-      val list:util.ArrayDeque[Boolean] = new util.ArrayDeque[Boolean]()
-      val listd:ListBuffer[Boolean] = new ListBuffer[Boolean]()
-      val liste:mutable.Queue[Boolean] = new mutable.Queue[Boolean]()
-      val b: mutable.BitSet = mutable.BitSet()
       val jb: java.util.BitSet = new util.BitSet()
       var i:Int = 0
       for (c <- data) {
-      //  currentBitSet = map(c)
-       // currentBitSet.map(_ + index)
-      //  b ++ currentBitSet
-       // map(c).foreach(list.push)
-       // map(c).foreach(liste +=)
-       // b += map(c).toTraversable
-//        for (q <- map(c)) {
-//          b(i) = q
-//          i += 1
-//        }
-                for (q <- map(c)) {
-                  jb.set(i, q)
-                  i += 1
-                }
+        for (q <- map(c)) {
+          jb.set(i, q)
+          i += 1
+        }
       }
+      println(s"original Bitset is: $jb")
       jb.toByteArray
     }
   }
@@ -118,19 +125,45 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Bool
   }
 
   //6
-  def saveNodesToFile(filename: String, nodes: mutable.PriorityQueue[Node]): Unit = {
-    val bos = new ObjectOutputStream(new FileOutputStream(filename))
-    bos.writeObject(nodes)
-    bos.close()
+  def saveSortedNodesToFile(filename: String, nodes: mutable.PriorityQueue[Node]): Unit = {
+    val oos = new ObjectOutputStream(new FileOutputStream(filename))
+    oos.writeObject(nodes)
+    oos.close()
   }
 
-  //6
-  def saveNodesToFile(filename: String, nodes: mutable.HashMap[Char, AtomicInteger]): Unit = {
-    val bos = new ObjectOutputStream(new FileOutputStream(filename))
-    bos.writeObject(nodes)
-    bos.close()
+
+  //7
+  def loadDataFromFile(filename: String): Array[Byte] = {
+    val file = new File(filename)
+    val fis = new FileInputStream(file)
+    val b = new Array[Byte](file.length.asInstanceOf[Int])
+    fis.read(b)
+    fis.close()
+    b
   }
 
+  //7
+  def loadSortedNodesFromFile(filename: String): mutable.PriorityQueue[Node] = {
+    val ois = new ObjectInputStream(new FileInputStream(filename))
+    var o = ois.readObject().asInstanceOf[mutable.PriorityQueue[Node]]
+    ois.close()
+    o
+  }
+
+  //7
+  def decodeDataWithMap(data: Array[Byte], map: mutable.HashMap[ArrayBuffer[Boolean], Char]): String = {
+    time.measureTime {
+      val jb: java.util.BitSet = util.BitSet.valueOf(data)
+      var i:Int = 0
+      for (b <- jb.) {
+        for (q <- map(c)) {
+          jb.set(i, q)
+          i += 1
+        }
+      }
+      jb.toByteArray
+    }
+  }
 
   //https://stackoverflow.com/questions/4965335/how-to-print-binary-tree-diagram re-did one of these in idiomatic scala, optimized it.
   private def print(n: Node, pref: String = "", isLeft: Boolean = false): Unit = {
