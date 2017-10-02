@@ -3,6 +3,7 @@ import java.nio.ByteBuffer
 import java.util
 import java.util.concurrent.atomic.AtomicInteger
 
+import scala.collection.concurrent.TrieMap
 import scala.collection.immutable.{BitSet, HashMap, HashSet}
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
@@ -17,7 +18,6 @@ object Huffman {
       for (c <- string) {
         map.getOrElseUpdate(c, new AtomicInteger(0)).incrementAndGet()
       }
-      println(s"unique characters: ${map.size}")
       map
     }
   }
@@ -36,7 +36,7 @@ object Huffman {
       nodes.enqueue(branch)
       if (nodes.size > 1) createTree(nodes) else {
         println()
-        print(branch) //disable this for a performance boost pl0x
+        treePrint (branch) //disable this for a performance boost pl0x
         branch
       }
     }
@@ -49,7 +49,7 @@ object Huffman {
   def getDynamicTree(nodes: mutable.PriorityQueue[Node]): Branch = {
     def createTree(nodes: mutable.PriorityQueue[Node], currentBranch: Branch = null): Branch = {
       if (nodes.size < 1) {
-        print(currentBranch)
+        treePrint(currentBranch)
         return currentBranch }
       if (currentBranch == null) return createTree(nodes, Branch(nodes.dequeue(), nodes.dequeue()))
       createTree(nodes, Branch(nodes.dequeue(), currentBranch))
@@ -75,7 +75,6 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Bool
     }
 
     addBitcodes(tree)
-    println(map.size)
     map
   }
 }
@@ -96,7 +95,6 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Bool
       }
 
       addBitcodes(tree)
-      println(map.size)
       map
     }
   }
@@ -112,7 +110,6 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Bool
           i += 1
         }
       }
-      println(s"original Bitset is: $jb")
       jb.toByteArray
     }
   }
@@ -152,27 +149,65 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Bool
 
   //7
   def decodeDataWithMap(data: Array[Byte], map: mutable.HashMap[ArrayBuffer[Boolean], Char]): String = {
+
     time.measureTime {
       val jb: java.util.BitSet = util.BitSet.valueOf(data)
+      var ad = new util.ArrayDeque[Boolean]()
+      var ab = ArrayBuffer[Boolean]()
+      val jbs: java.util.BitSet = new util.BitSet()
+      var l = List[Boolean]()
+      var tm = TrieMap[ArrayBuffer[Boolean], Char]() ++ map
+      var sb = new StringBuilder(jb.size()*8)
+      var maxSize = map.keysIterator.maxBy(_.length).length
+      var barray = new Array[Boolean](maxSize + 1)
+    //  var a = Array[Boolean]() ++= jb
       var i:Int = 0
-      for (b <- jb.) {
-        for (q <- map(c)) {
-          jb.set(i, q)
-          i += 1
+      var sec:Int = 0
+      map.foreach(println)
+      time.measureTime ({
+
+        for (i <- 0 until jb.previousSetBit(jb.size()) + 1) {
+          barray(sec) = jb.get(i)
+
+          if (map.contains(barray.dropRight(barray.length - sec).foldLeft(new ArrayBuffer[Boolean]()) { (k, h) => k += h })) {
+            //sb append map(barray)
+            ab.clear()
+            barray = new Array[Boolean](maxSize + 1)
+            sec = -1
+          }
+          sec += 1
+        //  if (ad.to[ArrayBuffer[Boolean]])
         }
-      }
+//        while (ab.nonEmpty) {
+//          ab append false
+//          if (map.contains(ab)) {
+//            println("YESSSSS" + map(ab) + i)
+//            ab.clear()
+//          }
+//        }
+      }, "BitSet Iteration")
+      println()
+      println()
+      time.measureTime ({
+        for (by <- data) {
+          for (i <- 0 until 8) {
+
+          }
+        }
+      }, "Byte Iteration")
       jb.toByteArray
+      ""
     }
   }
 
   //https://stackoverflow.com/questions/4965335/how-to-print-binary-tree-diagram re-did one of these in idiomatic scala, optimized it.
-  private def print(n: Node, pref: String = "", isLeft: Boolean = false): Unit = {
+  private def treePrint(n: Node, pref: String = "", isLeft: Boolean = false): Unit = {
     if (n != null) {
       println(pref + (if (isLeft) "|-- " else "\\-- ") + n.toString)
       n match {
         case branch: Branch =>
-          if (branch.left != null) print(branch.left, pref + (if (isLeft) "|   " else "    "), isLeft = true)
-          if (branch.right != null) print(branch.right, pref + (if (isLeft) "|   " else "    "))
+          if (branch.left != null) treePrint(branch.left, pref + (if (isLeft) "|   " else "    "), isLeft = true)
+          if (branch.right != null) treePrint(branch.right, pref + (if (isLeft) "|   " else "    "))
         case _ =>
       }
       }
