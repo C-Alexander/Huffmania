@@ -10,19 +10,19 @@ object Huffman {
   val time = Stopwatch()
 
   //1
-  def getCharacterFrequency(string: Array[Byte]): mutable.HashMap[Byte, AtomicInteger] = {
+  def getCharacterFrequency(string: String): mutable.HashMap[Char, AtomicInteger] = {
     time.measureTime {
-      val map: mutable.HashMap[Byte, AtomicInteger] = mutable.HashMap[Byte, AtomicInteger]()
+      val map: mutable.HashMap[Char, AtomicInteger] = mutable.HashMap[Char, AtomicInteger]()
       for (c <- string) {
         map.getOrElseUpdate(c, new AtomicInteger(0)).incrementAndGet()
       }
-      println(s"unique Byteacters: ${map.size}")
+      println(s"unique characters: ${map.size}")
       map
     }
   }
 
   //2
-  def getSortedNodes(map: mutable.HashMap[Byte, AtomicInteger]): mutable.PriorityQueue[Node] = {
+  def getSortedNodes(map: mutable.HashMap[Char, AtomicInteger]): mutable.PriorityQueue[Node] = {
     time.measureTime {
       map.foldLeft(mutable.PriorityQueue[Node]()(Ordering.by[Node, Int](_.frequency).reverse)) { (q, m) => q += Leaf(m._1, m._2.intValue()) }
     }
@@ -59,16 +59,16 @@ object Huffman {
   }
 
   //4
-def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Byte, ArrayBuffer[Boolean]] = {
+def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Char, ArrayBuffer[Boolean]] = {
   time.measureTime {
-    val map: mutable.HashMap[Byte,  ArrayBuffer[Boolean]] = mutable.HashMap[Byte, ArrayBuffer[Boolean]]()
+    val map: mutable.HashMap[Char,  ArrayBuffer[Boolean]] = mutable.HashMap[Char, ArrayBuffer[Boolean]]()
 
     def addBitcodes(tree: Node,
                     location:  ArrayBuffer[Boolean] =  ArrayBuffer[Boolean]()): Unit = {
       tree match {
         case (leaf: Leaf) =>
-          println(s"adding leaf: ${leaf.Byte} for location: $location")
-          map.put(leaf.Byte, location)
+          println(s"adding leaf: ${leaf.char} for location: $location")
+          map.put(leaf.char, location)
         case (branch: Branch) =>
           addBitcodes(branch.left, location.clone() += false)
           addBitcodes(branch.right, location.clone() += true)
@@ -82,7 +82,7 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Byte, ArrayBuffer[Bool
 }
 
   //5
-  def encodeDataWithMap(data: Array[Byte], map: mutable.HashMap[Byte, ArrayBuffer[Boolean]]): Array[Byte] = {
+  def encodeDataWithMap(data: String, map: mutable.HashMap[Char, ArrayBuffer[Boolean]]): Array[Byte] = {
     time.measureTime {
       val list:util.ArrayDeque[Boolean] = new util.ArrayDeque[Boolean]()
       val listd:ListBuffer[Boolean] = new ListBuffer[Boolean]()
@@ -125,7 +125,7 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Byte, ArrayBuffer[Bool
   }
 
   //6
-  def saveNodesToFile(filename: String, nodes: mutable.HashMap[Byte, AtomicInteger]): Unit = {
+  def saveNodesToFile(filename: String, nodes: mutable.HashMap[Char, AtomicInteger]): Unit = {
     val bos = new ObjectOutputStream(new FileOutputStream(filename))
     bos.writeObject(nodes)
     bos.close()
@@ -149,12 +149,12 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Byte, ArrayBuffer[Bool
   abstract class Node() {
     def frequency:Int
   }
-  case class Leaf(Byte: Byte, frequency: Int) extends Node {
-    override def toString: String = s"$frequency:${Byte.toString.replace("\n", "\\n")}"
+  case class Leaf(char: Char, frequency: Int) extends Node {
+    override def toString: String = s"$frequency:${char.toString.replace("\n", "\\n")}"
   }
-  case class Branch(left: Node, right: Node, ByteSet: HashSet[Byte], frequency: Int) extends Node {
-   // override def toString: String = s"| $frequency:${ByteSet.mkString("[", ",", "]")} |\n\t/\t\\\n/\t\t\\\n${left.toString}\t\t${right.toString}"
-   override def toString: String = s"$frequency:${ByteSet.mkString("[", ",", "]").replace("\n", "\\n")}"
+  case class Branch(left: Node, right: Node, charSet: HashSet[Char], frequency: Int) extends Node {
+   // override def toString: String = s"| $frequency:${charSet.mkString("[", ",", "]")} |\n\t/\t\\\n/\t\t\\\n${left.toString}\t\t${right.toString}"
+   override def toString: String = s"$frequency:${charSet.mkString("[", ",", "]").replace("\n", "\\n")}"
   }
 
   object Branch {
@@ -167,19 +167,19 @@ def getEncodingMapFromTree(tree: Branch): mutable.HashMap[Byte, ArrayBuffer[Bool
       }
     }
     def apply(left: Leaf, right: Leaf): Branch = {
-      val branch = new Branch(left, right, HashSet[Byte](left.Byte, right.Byte), left.frequency + right.frequency)
+      val branch = new Branch(left, right, HashSet[Char](left.char, right.char), left.frequency + right.frequency)
       branch
     }
     def apply(left: Branch, right: Leaf): Branch = {
-      val branch = new Branch(left, right, left.ByteSet + right.Byte, left.frequency + right.frequency)
+      val branch = new Branch(left, right, left.charSet + right.char, left.frequency + right.frequency)
       branch
     }
     def apply(left: Leaf, right: Branch): Branch = {
-      val branch = new Branch(left, right, right.ByteSet + left.Byte, left.frequency + right.frequency)
+      val branch = new Branch(left, right, right.charSet + left.char, left.frequency + right.frequency)
       branch
     }
     def apply(left: Branch, right: Branch): Branch = {
-      val branch = new Branch(left, right, left.ByteSet ++ right.ByteSet, left.frequency + right.frequency)
+      val branch = new Branch(left, right, left.charSet ++ right.charSet, left.frequency + right.frequency)
       branch
     }
     }

@@ -1,5 +1,4 @@
 import java.io.File
-import java.nio.file.{Files, Paths}
 
 import Huffman._
 
@@ -11,8 +10,7 @@ object Main extends App {
     val dummyText: String = "Zaphod Beeblebrox"
 
     val textToDecode: String = Source.fromFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "EncodeThis_2847448.txt").mkString
-     val byteArray = Files.readAllBytes(Paths.get(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "lolo.bmp"))
-    if (getCharacterFrequency(byteArray).size < 2) {
+    if (getCharacterFrequency(textToDecode).size < 2) {
       println("Go huff yourself, shorty!")
       System.exit(0)
     }
@@ -21,8 +19,8 @@ object Main extends App {
 //    println(getSortedNodes(getCharacterFrequency(textToDecode)))
 //    println(getTree(getSortedNodes(getCharacterFrequency(textToDecode))))
 //    println(getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(textToDecode)))))
-    println(encodeDataWithMap(byteArray, getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(byteArray))))))
-    println(saveDataToFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.bin", encodeDataWithMap(byteArray, getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(byteArray)))))))
+//    println(encodeDataWithMap(textToDecode, getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(textToDecode))))))
+    println(saveDataToFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.bin", encodeDataWithMap(textToDecode, getEncodingMapFromTree(getTree(getSortedNodes(getCharacterFrequency(textToDecode)))))))
 //    saveNodesToFile(System.getProperty("user.home") + File.separator + "Huff" + File.separator + "DecodeThis_2847448.tree.bin", getCharacterFrequency(textToDecode))
 
   //  var b = BitSet(0, 2, 4, 6)
