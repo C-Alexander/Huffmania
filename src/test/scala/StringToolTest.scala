@@ -1,0 +1,3 @@
+class StringToolTest extends FunSuite {
+
+}
