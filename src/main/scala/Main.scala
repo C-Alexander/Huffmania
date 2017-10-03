@@ -5,6 +5,8 @@ object Main extends App {
   var filename_small = "EncodeThis_1098588"
   var filename_medium = "EncodeThis_1529973"
   var filename_large = "EncodeThis_2847448"
-  Huffman.encode(s"$filename_large.txt")
+  var filename_hardcore = "toCompress"
+
+  Huffman.encode(s"$filename_hardcore.txt")
   Huffman.decode("output")
  }

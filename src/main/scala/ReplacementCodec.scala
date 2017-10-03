@@ -8,8 +8,13 @@ import scala.collection.mutable.ArrayBuffer
 trait ReplacementCodec {
   this: Stopwatch =>
 
-  //5
-  def encodeDataWithMap(data: String, map: mutable.HashMap[Char, ArrayBuffer[Boolean]]): Array[Byte] = {
+  /**
+    * Encode data using a hashmap
+    * @param data to encode
+    * @param map map with the characters to replace, and the bits to replace it with as booleans
+    * @return An Array[Byte] of the replaced bits. Very efficient!
+    */
+  protected def encodeDataWithMap(data: String, map: mutable.HashMap[Char, ArrayBuffer[Boolean]]): Array[Byte] = {
     measureTime {
       val jb: java.util.BitSet = new util.BitSet()
       var i: Int = 0
@@ -23,8 +28,13 @@ trait ReplacementCodec {
     }
   }
 
-  //7
-  def decodeDataWithMap(data: Array[Byte], map: mutable.HashMap[ArrayBuffer[Boolean], Char]): String = {
+  /**
+    * Decode data using a hashmap
+    * @param data to Decode
+    * @param map map with the bits as booleans to replace, and the characters to replace them with
+    * @return The text resultant from the decoding as a string
+    */
+  protected def decodeDataWithMap(data: Array[Byte], map: mutable.HashMap[ArrayBuffer[Boolean], Char]): String = {
     measureTime({
       val bitSet: java.util.BitSet = util.BitSet.valueOf(data)
       var buffer = ArrayBuffer[Boolean]()

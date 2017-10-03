@@ -6,8 +6,7 @@ class HuffmanTest extends FunSuite with FileHandler with Stopwatch {
   var filename_medium = "EncodeThis_1529973"
   var filename_large = "EncodeThis_2847448"
   test("test encoding 10025 words") {
-    val filename = "EncodeThis_10025"
-    Huffman.encode(filename + ".txt")
+    Huffman.encode(filename_tiny + ".txt")
   }
 
   test("test decoding 10025 words") {
