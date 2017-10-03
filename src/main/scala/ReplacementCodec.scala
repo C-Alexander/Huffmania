@@ -5,6 +5,9 @@ import Huffman.measureTime
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
+/**
+  * A trait for coding backwards and forwards using Huffman
+  */
 trait ReplacementCodec {
   this: Stopwatch =>
 

@@ -5,6 +5,9 @@ import TreeModels.{Branch, Node}
 
 import scala.collection.mutable
 
+/**
+  * StringTools that are useful for displaying or creating huffman tree's with [[HuffmanTree]]
+  */
 trait StringTool {
   this: Stopwatch with HuffmanTree =>
 

@@ -7,6 +7,9 @@ import scala.collection.mutable.ArrayBuffer
 
 import TreeModels._
 
+/**
+  * Trait with functions for creating binary search nodes and trees for a huffman algorithm
+  */
 trait HuffmanTree {
   this: Stopwatch with StringTool =>
   /**

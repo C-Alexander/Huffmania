@@ -1,11 +1,20 @@
 /**
   * Awesome stopwatch class. Simply include the trait and put your code inside a measureTime block.
-  * @example measureTime ({
+  *@example
+  * {{{
+  *def method(parameter: Int, otherParameter: String): Int = {
+  *  measureTime {
+  *          doAlsoStuff()
+  *          doMore(parameter, otherparameter)
+  *         }
+  *
+  *  measureTime ({
   *          doStuff()
   *          return stuff
-  *         }, "Doing stuff")
+  *         }, "Doing stuff") //by giving text as a parameter, you can clarify your printlines!
+  *}
+  * }}}
   *
-  * Naming is optional! Can even leave out the ()'s if you do not. :)
   */
 trait Stopwatch {
 
