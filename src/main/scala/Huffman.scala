@@ -7,7 +7,6 @@ object Huffman extends Stopwatch with FileHandler with ReplacementCodec with Huf
   def encode(fromFilename: String = "input.txt",
              toFilename: String = "output",
              path: String = System.getProperty("user.home") + File.separator + "Huff" + File.separator): Unit = {
-
     val text = Source.fromFile(path + fromFilename).mkString
     val nodes = getSortedNodes(getCharacterFrequency(text))
     val encodingMap = getEncodingMapFromTree(getTree(nodes.clone))

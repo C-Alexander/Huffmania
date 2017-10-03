@@ -3,7 +3,7 @@ import scala.collection.immutable.HashSet
 //this is not how I wanted it, but the serializer is going f*** insane over having models from mixins. Limit of using Scala
 //with java shit I guess. I need to go report a bug at Scala, NO way this behavior is intended.
 //It doesn't even fucking give a proper error. I spent 2 hours trying to figure out WHAT the problem is.
-//It outright gives false errors and then finally ADMITS it really just doesnt know...
+//It outright gives false errors and then finally ADMITS it really just doesn't know...
 //Generally any object in the scope should be fine, my guess is its fucking up with the scope when mixing traits.
 object TreeModels {
   abstract class Node() {
